@@ -54,6 +54,83 @@ local themes = {
 local currentThemeName = "NeonBlue"
 local theme = themes[currentThemeName]
 
+-- === Theme Change Dropdown ===
+local function createDropdown()
+    local dropdownFrame = Instance.new("Frame")
+    dropdownFrame.Size = UDim2.new(0, 150, 0, 200)
+    dropdownFrame.Position = UDim2.new(0.5, -75, 0.5, 100)
+    dropdownFrame.BackgroundColor3 = theme.BackgroundColor
+    dropdownFrame.BorderSizePixel = 0
+    dropdownFrame.Visible = false
+    dropdownFrame.Parent = screenGui
+    roundify(dropdownFrame, 8)
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0, 30)
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Text = "Select Theme"
+    titleLabel.TextColor3 = theme.TextColor
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.SourceSans
+    titleLabel.TextSize = 20
+    titleLabel.Parent = dropdownFrame
+
+    local buttonSize = 0.2
+    local buttons = {}
+    local i = 0
+    for themeName, _ in pairs(themes) do
+        i = i + 1
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, 0, 0, buttonSize * 30)
+        button.Position = UDim2.new(0, 0, 0, 30 + (buttonSize * 30) * (i - 1))
+        button.Text = themeName
+        button.BackgroundColor3 = theme.ButtonColor
+        button.TextColor3 = theme.TextColor
+        button.Font = Enum.Font.SourceSans
+        button.TextSize = 18
+        button.Parent = dropdownFrame
+        roundify(button, 6)
+
+        button.MouseEnter:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = theme.ButtonHover
+            }):Play()
+        end)
+
+        button.MouseLeave:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = theme.ButtonColor
+            }):Play()
+        end)
+
+        button.MouseButton1Click:Connect(function()
+            currentThemeName = themeName
+            theme = themes[themeName]
+            updateTheme()
+            dropdownFrame.Visible = false
+        end)
+
+        table.insert(buttons, button)
+    end
+
+    return dropdownFrame
+end
+
+local themeDropdown = createDropdown()
+
+-- === UI Update Function ===
+local function updateTheme()
+    mainFrame.BackgroundColor3 = theme.BackgroundColor
+    injectButton.BackgroundColor3 = theme.ButtonColor
+    antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
+    injectButton.TextColor3 = theme.TextColor
+    antiVoidSwitch.TextColor3 = theme.TextColor
+    confirmFrame.BackgroundColor3 = theme.ConfirmBackground
+    yesButton.BackgroundColor3 = theme.YesColor
+    cancelButton.BackgroundColor3 = theme.NoColor
+    titleLabel.TextColor3 = theme.TextColor
+end
+
 -- === Rounded Corners ===
 local function roundify(instance, radius)
     local corner = Instance.new("UICorner")
