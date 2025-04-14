@@ -75,8 +75,8 @@ blur.Parent = Lighting
 
 -- === Main Frame ===
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 240, 0, 130)
-mainFrame.Position = UDim2.new(0.5, -120, 0.5, -65)
+mainFrame.Size = UDim2.new(0, 400, 0, 220)  -- Increased size (wider and taller)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)  -- Centered with the new size
 mainFrame.BackgroundColor3 = theme.BackgroundColor
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -86,34 +86,34 @@ roundify(mainFrame, 8)
 
 -- === Inject Button ===
 local injectButton = Instance.new("TextButton")
-injectButton.Size = UDim2.new(1, -20, 0, 40)
-injectButton.Position = UDim2.new(0, 10, 0, 20)
+injectButton.Size = UDim2.new(1, -20, 0, 50)  -- Increased button size
+injectButton.Position = UDim2.new(0, 10, 0, 30)  -- Adjusted position
 injectButton.Text = "Inject Infinite Yield"
 injectButton.BackgroundColor3 = theme.ButtonColor
 injectButton.TextColor3 = theme.TextColor
 injectButton.Font = Enum.Font.SourceSans
-injectButton.TextSize = 20
+injectButton.TextSize = 22  -- Increased text size
 injectButton.AutoButtonColor = false
 injectButton.Parent = mainFrame
 roundify(injectButton, 6)
 
 -- === AntiVoid Switch ===
 local antiVoidSwitch = Instance.new("TextButton")
-antiVoidSwitch.Size = UDim2.new(1, -20, 0, 30)
-antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)
+antiVoidSwitch.Size = UDim2.new(1, -20, 0, 40)  -- Increased button size
+antiVoidSwitch.Position = UDim2.new(0, 10, 0, 90)  -- Adjusted position
 antiVoidSwitch.Text = "AntiVoid: OFF"
 antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
 antiVoidSwitch.TextColor3 = theme.TextColor
 antiVoidSwitch.Font = Enum.Font.SourceSans
-antiVoidSwitch.TextSize = 18
+antiVoidSwitch.TextSize = 20  -- Increased text size
 antiVoidSwitch.AutoButtonColor = false
 antiVoidSwitch.Parent = mainFrame
 roundify(antiVoidSwitch, 6)
 
 -- === Confirmation Frame ===
 local confirmFrame = Instance.new("Frame")
-confirmFrame.Size = UDim2.new(0, 200, 0, 100)
-confirmFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+confirmFrame.Size = UDim2.new(0, 250, 0, 130)  -- Increased confirmation frame size
+confirmFrame.Position = UDim2.new(0.5, -125, 0.5, -65)  -- Centered with the new size
 confirmFrame.BackgroundColor3 = theme.ConfirmBackground
 confirmFrame.BorderSizePixel = 0
 confirmFrame.Visible = false
@@ -125,25 +125,25 @@ roundify(confirmFrame, 8)
 
 -- === Confirmation Text ===
 local confirmText = Instance.new("TextLabel")
-confirmText.Size = UDim2.new(1, -20, 0, 40)
-confirmText.Position = UDim2.new(0, 10, 0, 5)
+confirmText.Size = UDim2.new(1, -20, 0, 50)  -- Increased text size
+confirmText.Position = UDim2.new(0, 10, 0, 10)
 confirmText.Text = "Are you sure you want to inject?"
 confirmText.TextColor3 = theme.TextColor
 confirmText.Font = Enum.Font.SourceSans
-confirmText.TextSize = 18
+confirmText.TextSize = 20  -- Increased text size
 confirmText.BackgroundTransparency = 1
 confirmText.Parent = confirmFrame
 
 -- === Button Creator ===
 local function createButton(text, pos, colorKey)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.4, 0, 0, 30)
+    btn.Size = UDim2.new(0.4, 0, 0, 40)  -- Increased button size
     btn.Position = pos
     btn.Text = text
     btn.BackgroundColor3 = theme[colorKey]
     btn.TextColor3 = theme.TextColor
     btn.Font = Enum.Font.SourceSans
-    btn.TextSize = 18
+    btn.TextSize = 20  -- Increased text size
     btn.AutoButtonColor = false
     btn.Parent = confirmFrame
     roundify(btn, 6)
@@ -184,7 +184,7 @@ local function maximize()
     mainFrame.Size = UDim2.new(0, 0, 0, 0)
     mainFrame.BackgroundTransparency = 1
     TweenService:Create(mainFrame, TweenInfo.new(0.3), {
-        Size = UDim2.new(0, 240, 0, 130),
+        Size = UDim2.new(0, 400, 0, 220),
         BackgroundTransparency = 0
     }):Play()
     minimized = false
@@ -202,7 +202,7 @@ local function showConfirm()
     confirmFrame.Visible = true
     confirmFrame.BackgroundTransparency = 1
     TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
-        Size = UDim2.new(0, 200, 0, 100),
+        Size = UDim2.new(0, 250, 0, 130),
         BackgroundTransparency = 0
     }):Play()
 end
@@ -234,7 +234,7 @@ cancelButton.MouseButton1Click:Connect(hideConfirm)
 -- === AntiVoid Functionality (Tiny Bit Lower than Y = 0) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
-local platformHeight = -0.5-- Slightly lower than Y = 0 (tiny offset)
+local platformHeight = -0.1  -- Slightly lower than Y = 0 (tiny offset)
 
 local function createAntiVoidPlatform()
     -- Create a massive, completely invisible platform at the fixed height (Y = platformHeight)
