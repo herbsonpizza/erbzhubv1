@@ -231,15 +231,16 @@ end)
 
 cancelButton.MouseButton1Click:Connect(hideConfirm)
 
--- === AntiVoid Functionality (at Default Game Height) ===
+-- === AntiVoid Functionality (Fixed Height) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
+local platformHeight = 0  -- Fixed height for the AntiVoid platform (Y = 0)
 
 local function createAntiVoidPlatform()
-    -- Create a massive, completely invisible platform at the default game height (Y = 0)
+    -- Create a massive, completely invisible platform at the fixed height (Y = platformHeight)
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-    antiVoidPlatform.Position = Vector3.new(0, 0, 0)  -- Position at the default game height (Y = 0)
+    antiVoidPlatform.Position = Vector3.new(0, platformHeight, 0)  -- Position at the fixed height
     antiVoidPlatform.Anchored = true
     antiVoidPlatform.CanCollide = true  -- Make it collidable so players can walk on it
     antiVoidPlatform.Transparency = 1  -- Completely invisible
@@ -263,39 +264,3 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
         removeAntiVoidPlatform()
     end
 end)
-
--- === Resizable UI Implementation ===
-local isResizing = false
-local resizeDirection = nil
-local resizeOffset = Vector2.new(0, 0)
-
--- Resize Handle (Bottom Right Corner)
-local resizeHandle = Instance.new("TextButton")
-resizeHandle.Size = UDim2.new(0, 20, 0, 20)
-resizeHandle.Position = UDim2.new(1, -20, 1, -20)
-resizeHandle.BackgroundColor3 = theme.ButtonColor
-resizeHandle.Text = ""
-resizeHandle.Parent = mainFrame
-roundify(resizeHandle, 4)
-
-resizeHandle.MouseButton1Down:Connect(function()
-    isResizing = true
-    resizeDirection = "bottomright"
-    resizeOffset = UserInputService:GetMouseLocation() - mainFrame.AbsolutePosition
-end)
-
-RunService.Heartbeat:Connect(function()
-    if isResizing then
-        local mouseLocation = UserInputService:GetMouseLocation()
-        local delta = mouseLocation - resizeOffset
-        local newSize = UDim2.new(0, math.max(240, delta.X), 0, math.max(130, delta.Y))
-        mainFrame.Size = newSize
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isResizing = false
-    end
-end)
-
