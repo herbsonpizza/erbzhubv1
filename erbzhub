@@ -239,9 +239,9 @@ local function createAntiVoidPlatform()
     -- Create a massive, completely invisible platform at the player's foot height
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- At player's foot height
+    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Position at player's foot height
     antiVoidPlatform.Anchored = true
-    antiVoidPlatform.CanCollide = false
+    antiVoidPlatform.CanCollide = true  -- Make it collidable so players can walk on it
     antiVoidPlatform.Transparency = 1  -- Completely invisible
     antiVoidPlatform.Parent = workspace
 end
@@ -258,9 +258,10 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
     if antiVoidEnabled then
         antiVoidSwitch.Text = "AntiVoid: ON"
         createAntiVoidPlatform()
+        -- Ensure the platform stays fixed at the player's foot level, independent of movement
         RunService.Heartbeat:Connect(function()
             if antiVoidEnabled and antiVoidPlatform then
-                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Follow player height
+                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Stay at foot height
             end
         end)
     else
