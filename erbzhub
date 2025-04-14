@@ -1,4 +1,4 @@
--- LocalScript inside StarterGui or StarterPlayerScripts
+-- LocalScript in StarterPlayerScripts or StarterGui
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -6,6 +6,17 @@ local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
 
 local player = Players.LocalPlayer
+
+-- === Theme Settings ===
+local theme = {
+	BackgroundColor = Color3.fromRGB(20, 20, 20),
+	ButtonColor = Color3.fromRGB(30, 30, 30),
+	ButtonHover = Color3.fromRGB(45, 45, 45),
+	TextColor = Color3.new(1, 1, 1),
+	ConfirmBackground = Color3.fromRGB(25, 25, 25),
+	YesColor = Color3.fromRGB(40, 120, 40),
+	NoColor = Color3.fromRGB(120, 40, 40),
+}
 
 -- === Helper: Rounded Corners ===
 local function roundify(instance, radius)
@@ -30,7 +41,7 @@ blur.Parent = Lighting
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 220, 0, 80)
 mainFrame.Position = UDim2.new(0.5, -110, 0.5, -40)
-mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BackgroundColor3 = theme.BackgroundColor
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
@@ -42,8 +53,8 @@ local injectButton = Instance.new("TextButton")
 injectButton.Size = UDim2.new(1, -20, 0, 40)
 injectButton.Position = UDim2.new(0, 10, 0, 20)
 injectButton.Text = "Inject Infinite Yield"
-injectButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-injectButton.TextColor3 = Color3.new(1, 1, 1)
+injectButton.BackgroundColor3 = theme.ButtonColor
+injectButton.TextColor3 = theme.TextColor
 injectButton.Font = Enum.Font.SourceSans
 injectButton.TextSize = 20
 injectButton.AutoButtonColor = false
@@ -54,7 +65,7 @@ roundify(injectButton, 6)
 local confirmFrame = Instance.new("Frame")
 confirmFrame.Size = UDim2.new(0, 200, 0, 100)
 confirmFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
-confirmFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+confirmFrame.BackgroundColor3 = theme.ConfirmBackground
 confirmFrame.BorderSizePixel = 0
 confirmFrame.Visible = false
 confirmFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -68,30 +79,31 @@ local confirmText = Instance.new("TextLabel")
 confirmText.Size = UDim2.new(1, -20, 0, 40)
 confirmText.Position = UDim2.new(0, 10, 0, 5)
 confirmText.Text = "Are you sure you want to inject?"
-confirmText.TextColor3 = Color3.new(1, 1, 1)
+confirmText.TextColor3 = theme.TextColor
 confirmText.Font = Enum.Font.SourceSans
 confirmText.TextSize = 18
 confirmText.BackgroundTransparency = 1
 confirmText.Parent = confirmFrame
 
 -- === Buttons with Hover Effects ===
-local function createButton(text, pos, color)
+local function createButton(text, pos, colorKey)
+	local color = theme[colorKey]
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0.4, 0, 0, 30)
 	btn.Position = pos
 	btn.Text = text
 	btn.BackgroundColor3 = color
-	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.TextColor3 = theme.TextColor
 	btn.Font = Enum.Font.SourceSans
 	btn.TextSize = 18
 	btn.AutoButtonColor = false
 	btn.Parent = confirmFrame
 	roundify(btn, 6)
 
-	-- Hover effect
 	btn.MouseEnter:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color:lerp(Color3.new(1, 1, 1), 0.1)}):Play()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = theme.ButtonHover}):Play()
 	end)
+
 	btn.MouseLeave:Connect(function()
 		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
 	end)
@@ -99,8 +111,8 @@ local function createButton(text, pos, color)
 	return btn
 end
 
-local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.6, 0), Color3.fromRGB(40, 120, 40))
-local cancelButton = createButton("Cancel", UDim2.new(0.5, 10, 0.6, 0), Color3.fromRGB(120, 40, 40))
+local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.6, 0), "YesColor")
+local cancelButton = createButton("Cancel", UDim2.new(0.5, 10, 0.6, 0), "NoColor")
 
 -- === Animation Tweens ===
 local minimizeTweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -124,7 +136,7 @@ local function maximize()
 	minimized = false
 end
 
--- === Toggle with Left Control ===
+-- === Toggle Minimize/Maximize ===
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if not gameProcessed and input.KeyCode == Enum.KeyCode.LeftControl then
 		if minimized then
