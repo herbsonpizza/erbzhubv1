@@ -341,3 +341,10 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
         removeAntiVoidPlatform()
     end
 end)
+
+-- === Show Dropdown ===
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.T then
+        themeDropdown.Visible = not themeDropdown.Visible
+    end
+end)
