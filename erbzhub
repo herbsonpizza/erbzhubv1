@@ -4,12 +4,12 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "InjectorUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
 -- === Theme Presets ===
 local themes = {
@@ -40,12 +40,117 @@ local themes = {
         YesColor = Color3.fromRGB(0, 170, 255),
         NoColor = Color3.fromRGB(255, 85, 100),
     },
+    Retro = {
+        BackgroundColor = Color3.fromRGB(32, 18, 77),
+        ButtonColor = Color3.fromRGB(255, 111, 105),
+        ButtonHover = Color3.fromRGB(255, 171, 145),
+        TextColor = Color3.fromRGB(255, 255, 240),
+        ConfirmBackground = Color3.fromRGB(255, 160, 122),
+        YesColor = Color3.fromRGB(240, 240, 120),
+        NoColor = Color3.fromRGB(255, 100, 100),
+    },
 }
 
 local currentThemeName = "NeonBlue"
 local theme = themes[currentThemeName]
 
--- === UI Elements ===
+-- === Theme Change Dropdown ===
+local function createDropdown()
+    local dropdownFrame = Instance.new("Frame")
+    dropdownFrame.Size = UDim2.new(0, 150, 0, 200)
+    dropdownFrame.Position = UDim2.new(0.5, -75, 0.5, 100)
+    dropdownFrame.BackgroundColor3 = theme.BackgroundColor
+    dropdownFrame.BorderSizePixel = 0
+    dropdownFrame.Visible = false
+    dropdownFrame.Parent = screenGui
+    roundify(dropdownFrame, 8)
+
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, 0, 0, 30)
+    titleLabel.Position = UDim2.new(0, 0, 0, 0)
+    titleLabel.Text = "Select Theme"
+    titleLabel.TextColor3 = theme.TextColor
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Font = Enum.Font.SourceSans
+    titleLabel.TextSize = 20
+    titleLabel.Parent = dropdownFrame
+
+    local buttonSize = 0.2
+    local buttons = {}
+    local i = 0
+    for themeName, _ in pairs(themes) do
+        i = i + 1
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, 0, 0, buttonSize * 30)
+        button.Position = UDim2.new(0, 0, 0, 30 + (buttonSize * 30) * (i - 1))
+        button.Text = themeName
+        button.BackgroundColor3 = theme.ButtonColor
+        button.TextColor3 = theme.TextColor
+        button.Font = Enum.Font.SourceSans
+        button.TextSize = 18
+        button.Parent = dropdownFrame
+        roundify(button, 6)
+
+        button.MouseEnter:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = theme.ButtonHover
+            }):Play()
+        end)
+
+        button.MouseLeave:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = theme.ButtonColor
+            }):Play()
+        end)
+
+        button.MouseButton1Click:Connect(function()
+            currentThemeName = themeName
+            theme = themes[themeName]
+            updateTheme()
+            dropdownFrame.Visible = false
+        end)
+
+        table.insert(buttons, button)
+    end
+
+    return dropdownFrame
+end
+
+local themeDropdown = createDropdown()
+
+-- === UI Update Function ===
+local function updateTheme()
+    mainFrame.BackgroundColor3 = theme.BackgroundColor
+    injectButton.BackgroundColor3 = theme.ButtonColor
+    antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
+    injectButton.TextColor3 = theme.TextColor
+    antiVoidSwitch.TextColor3 = theme.TextColor
+    confirmFrame.BackgroundColor3 = theme.ConfirmBackground
+    yesButton.BackgroundColor3 = theme.YesColor
+    cancelButton.BackgroundColor3 = theme.NoColor
+    titleLabel.TextColor3 = theme.TextColor
+end
+
+-- === Rounded Corners ===
+local function roundify(instance, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius)
+    corner.Parent = instance
+end
+
+-- === Screen GUI ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "InjectorUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- === Blur Effect ===
+local blur = Instance.new("BlurEffect")
+blur.Size = 20
+blur.Enabled = false
+blur.Parent = Lighting
+
+-- === Main Frame ===
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 400, 0, 220)  -- Increased size (wider and taller)
 mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)  -- Centered with the new size
@@ -54,17 +159,9 @@ mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
 mainFrame.Parent = screenGui
+roundify(mainFrame, 8)
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 30)
-titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.Text = "Injector UI"
-titleLabel.TextColor3 = theme.TextColor
-titleLabel.BackgroundTransparency = 1
-titleLabel.Font = Enum.Font.SourceSans
-titleLabel.TextSize = 20
-titleLabel.Parent = mainFrame
-
+-- === Inject Button ===
 local injectButton = Instance.new("TextButton")
 injectButton.Size = UDim2.new(1, -20, 0, 50)  -- Increased button size
 injectButton.Position = UDim2.new(0, 10, 0, 30)  -- Adjusted position
@@ -75,7 +172,9 @@ injectButton.Font = Enum.Font.SourceSans
 injectButton.TextSize = 22  -- Increased text size
 injectButton.AutoButtonColor = false
 injectButton.Parent = mainFrame
+roundify(injectButton, 6)
 
+-- === AntiVoid Switch ===
 local antiVoidSwitch = Instance.new("TextButton")
 antiVoidSwitch.Size = UDim2.new(1, -20, 0, 40)  -- Increased button size
 antiVoidSwitch.Position = UDim2.new(0, 10, 0, 90)  -- Adjusted position
@@ -86,76 +185,136 @@ antiVoidSwitch.Font = Enum.Font.SourceSans
 antiVoidSwitch.TextSize = 20  -- Increased text size
 antiVoidSwitch.AutoButtonColor = false
 antiVoidSwitch.Parent = mainFrame
+roundify(antiVoidSwitch, 6)
 
--- === Dropdown for Theme Selection ===
-local themeDropdown = Instance.new("Frame")
-themeDropdown.Size = UDim2.new(0, 150, 0, 200)
-themeDropdown.Position = UDim2.new(0.5, -75, 0.5, 100)
-themeDropdown.BackgroundColor3 = theme.BackgroundColor
-themeDropdown.BorderSizePixel = 0
-themeDropdown.Visible = false
-themeDropdown.Parent = screenGui
+-- === Confirmation Frame ===
+local confirmFrame = Instance.new("Frame")
+confirmFrame.Size = UDim2.new(0, 250, 0, 130)  -- Increased confirmation frame size
+confirmFrame.Position = UDim2.new(0.5, -125, 0.5, -65)  -- Centered with the new size
+confirmFrame.BackgroundColor3 = theme.ConfirmBackground
+confirmFrame.BorderSizePixel = 0
+confirmFrame.Visible = false
+confirmFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+confirmFrame.Active = true
+confirmFrame.Draggable = true
+confirmFrame.Parent = screenGui
+roundify(confirmFrame, 8)
 
-local dropdownTitle = Instance.new("TextLabel")
-dropdownTitle.Size = UDim2.new(1, 0, 0, 30)
-dropdownTitle.Position = UDim2.new(0, 0, 0, 0)
-dropdownTitle.Text = "Select Theme"
-dropdownTitle.TextColor3 = theme.TextColor
-dropdownTitle.BackgroundTransparency = 1
-dropdownTitle.Font = Enum.Font.SourceSans
-dropdownTitle.TextSize = 20
-dropdownTitle.Parent = themeDropdown
+-- === Confirmation Text ===
+local confirmText = Instance.new("TextLabel")
+confirmText.Size = UDim2.new(1, -20, 0, 50)  -- Increased text size
+confirmText.Position = UDim2.new(0, 10, 0, 10)
+confirmText.Text = "Are you sure you want to inject?"
+confirmText.TextColor3 = theme.TextColor
+confirmText.Font = Enum.Font.SourceSans
+confirmText.TextSize = 20  -- Increased text size
+confirmText.BackgroundTransparency = 1
+confirmText.Parent = confirmFrame
 
-local buttonHeight = 0.2
-local buttons = {}
+-- === Button Creator ===
+local function createButton(text, pos, colorKey)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.4, 0, 0, 40)  -- Increased button size
+    btn.Position = pos
+    btn.Text = text
+    btn.BackgroundColor3 = theme[colorKey]
+    btn.TextColor3 = theme.TextColor
+    btn.Font = Enum.Font.SourceSans
+    btn.TextSize = 20  -- Increased text size
+    btn.AutoButtonColor = false
+    btn.Parent = confirmFrame
+    roundify(btn, 6)
 
-local function createDropdownButton(themeName, position)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, buttonHeight * 30)
-    button.Position = UDim2.new(0, 0, 0, position)
-    button.Text = themeName
-    button.BackgroundColor3 = theme.ButtonColor
-    button.TextColor3 = theme.TextColor
-    button.Font = Enum.Font.SourceSans
-    button.TextSize = 18
-    button.Parent = themeDropdown
-    button.MouseEnter:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = theme.ButtonHover}):Play()
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            BackgroundColor3 = theme.ButtonHover
+        }):Play()
     end)
-    button.MouseLeave:Connect(function()
-        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = theme.ButtonColor}):Play()
+
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            BackgroundColor3 = theme[colorKey]
+        }):Play()
     end)
 
-    button.MouseButton1Click:Connect(function()
-        currentThemeName = themeName
-        theme = themes[themeName]
-        updateTheme()
-        themeDropdown.Visible = false
+    return btn
+end
+
+local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.6, 0), "YesColor")
+local cancelButton = createButton("Cancel", UDim2.new(0.5, 10, 0.6, 0), "NoColor")
+
+-- === Animations ===
+local minimized = false
+
+local function minimize()
+    minimized = true
+    TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    }):Play()
+    task.wait(0.3)
+    mainFrame.Visible = false
+end
+
+local function maximize()
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 0, 0, 0)
+    mainFrame.BackgroundTransparency = 1
+    TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 400, 0, 220),
+        BackgroundTransparency = 0
+    }):Play()
+    minimized = false
+end
+
+UserInputService.InputBegan:Connect(function(input, gp)
+    if not gp and input.KeyCode == Enum.KeyCode.LeftControl then
+        if minimized then maximize() else minimize() end
+    end
+end)
+
+local function showConfirm()
+    blur.Enabled = true
+    confirmFrame.Size = UDim2.new(0, 0, 0, 0)
+    confirmFrame.Visible = true
+    confirmFrame.BackgroundTransparency = 1
+    TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 250, 0, 130),
+        BackgroundTransparency = 0
+    }):Play()
+end
+
+local function hideConfirm()
+    local t = TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    })
+    t:Play()
+    t.Completed:Connect(function()
+        confirmFrame.Visible = false
+        blur.Enabled = false
     end)
 end
 
-local i = 0
-for themeName, _ in pairs(themes) do
-    createDropdownButton(themeName, i * (buttonHeight * 30))
-    i = i + 1
-end
+injectButton.MouseButton1Click:Connect(showConfirm)
 
--- === Update Theme ===
-local function updateTheme()
-    mainFrame.BackgroundColor3 = theme.BackgroundColor
-    injectButton.BackgroundColor3 = theme.ButtonColor
-    antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
-    injectButton.TextColor3 = theme.TextColor
-    antiVoidSwitch.TextColor3 = theme.TextColor
-    titleLabel.TextColor3 = theme.TextColor
-end
+yesButton.MouseButton1Click:Connect(function()
+    hideConfirm()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+    injectButton.Text = "Injected!"
+end)
 
--- === AntiVoid Platform ===
+cancelButton.MouseButton1Click:Connect(hideConfirm)
+
+-- === AntiVoid Functionality (Set to Y = -0.5) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
 local platformHeight = -0.5  -- Set to Y = -0.5
 
 local function createAntiVoidPlatform()
+    -- Create a massive, completely invisible platform at the fixed height (Y = -0.5)
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
     antiVoidPlatform.Position = Vector3.new(0, platformHeight, 0)  -- Position at Y = -0.5
@@ -182,36 +341,3 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
         removeAntiVoidPlatform()
     end
 end)
-
--- === Show Dropdown ===
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.T then
-        themeDropdown.Visible = not themeDropdown.Visible
-    end
-end)
-
--- === Inject Infinite Yield ===
-injectButton.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end)
-    injectButton.Text = "Injected!"
-end)
-
--- === Rounded Corners ===
-local function roundify(instance, radius)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius)
-    corner.Parent = instance
-end
-
-roundify(mainFrame, 8)
-roundify(injectButton, 6)
-roundify(antiVoidSwitch, 6)
-roundify(themeDropdown, 8)
-
--- === Blur Effect ===
-local blur = Instance.new("BlurEffect")
-blur.Size = 20
-blur.Enabled = false
-blur.Parent = Lighting
