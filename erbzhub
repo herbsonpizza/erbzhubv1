@@ -234,7 +234,7 @@ cancelButton.MouseButton1Click:Connect(hideConfirm)
 -- === AntiVoid Functionality (Tiny Bit Lower than Y = 0) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
-local platformHeight = -0.8-- Slightly lower than Y = 0 (tiny offset)
+local platformHeight = -0.5-- Slightly lower than Y = 0 (tiny offset)
 
 local function createAntiVoidPlatform()
     -- Create a massive, completely invisible platform at the fixed height (Y = platformHeight)
