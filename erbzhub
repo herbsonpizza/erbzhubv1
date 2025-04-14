@@ -1,0 +1,182 @@
+-- LocalScript inside StarterGui or StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+
+-- === Helper: Rounded Corners ===
+local function roundify(instance, radius)
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, radius)
+	corner.Parent = instance
+end
+
+-- === GUI Setup ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "InjectorUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- === Blur Effect ===
+local blur = Instance.new("BlurEffect")
+blur.Size = 20
+blur.Enabled = false
+blur.Parent = Lighting
+
+-- === Main Frame ===
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 220, 0, 80)
+mainFrame.Position = UDim2.new(0.5, -110, 0.5, -40)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+roundify(mainFrame, 8)
+
+-- === Inject Button ===
+local injectButton = Instance.new("TextButton")
+injectButton.Size = UDim2.new(1, -20, 0, 40)
+injectButton.Position = UDim2.new(0, 10, 0, 20)
+injectButton.Text = "Inject Infinite Yield"
+injectButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+injectButton.TextColor3 = Color3.new(1, 1, 1)
+injectButton.Font = Enum.Font.SourceSans
+injectButton.TextSize = 20
+injectButton.AutoButtonColor = false
+injectButton.Parent = mainFrame
+roundify(injectButton, 6)
+
+-- === Confirmation Frame ===
+local confirmFrame = Instance.new("Frame")
+confirmFrame.Size = UDim2.new(0, 200, 0, 100)
+confirmFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+confirmFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+confirmFrame.BorderSizePixel = 0
+confirmFrame.Visible = false
+confirmFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+confirmFrame.Active = true
+confirmFrame.Draggable = true
+confirmFrame.Parent = screenGui
+roundify(confirmFrame, 8)
+
+-- === Confirmation Text ===
+local confirmText = Instance.new("TextLabel")
+confirmText.Size = UDim2.new(1, -20, 0, 40)
+confirmText.Position = UDim2.new(0, 10, 0, 5)
+confirmText.Text = "Are you sure you want to inject?"
+confirmText.TextColor3 = Color3.new(1, 1, 1)
+confirmText.Font = Enum.Font.SourceSans
+confirmText.TextSize = 18
+confirmText.BackgroundTransparency = 1
+confirmText.Parent = confirmFrame
+
+-- === Buttons with Hover Effects ===
+local function createButton(text, pos, color)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.4, 0, 0, 30)
+	btn.Position = pos
+	btn.Text = text
+	btn.BackgroundColor3 = color
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.SourceSans
+	btn.TextSize = 18
+	btn.AutoButtonColor = false
+	btn.Parent = confirmFrame
+	roundify(btn, 6)
+
+	-- Hover effect
+	btn.MouseEnter:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color:lerp(Color3.new(1, 1, 1), 0.1)}):Play()
+	end)
+	btn.MouseLeave:Connect(function()
+		TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = color}):Play()
+	end)
+
+	return btn
+end
+
+local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.6, 0), Color3.fromRGB(40, 120, 40))
+local cancelButton = createButton("Cancel", UDim2.new(0.5, 10, 0.6, 0), Color3.fromRGB(120, 40, 40))
+
+-- === Animation Tweens ===
+local minimizeTweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local maximizeTweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local minimized = false
+
+local function minimize()
+	minimized = true
+	TweenService:Create(mainFrame, minimizeTweenInfo, {Size = UDim2.new(0, 0, 0, 0)}):Play()
+	TweenService:Create(mainFrame, minimizeTweenInfo, {BackgroundTransparency = 1}):Play()
+	task.wait(0.3)
+	mainFrame.Visible = false
+end
+
+local function maximize()
+	mainFrame.Visible = true
+	mainFrame.Size = UDim2.new(0, 0, 0, 0)
+	mainFrame.BackgroundTransparency = 1
+	TweenService:Create(mainFrame, maximizeTweenInfo, {Size = UDim2.new(0, 220, 0, 80)}):Play()
+	TweenService:Create(mainFrame, maximizeTweenInfo, {BackgroundTransparency = 0}):Play()
+	minimized = false
+end
+
+-- === Toggle with Left Control ===
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if not gameProcessed and input.KeyCode == Enum.KeyCode.LeftControl then
+		if minimized then
+			maximize()
+		else
+			minimize()
+		end
+	end
+end)
+
+-- === Confirmation Popup Animation ===
+local function showConfirm()
+	blur.Enabled = true
+	confirmFrame.Size = UDim2.new(0, 0, 0, 0)
+	confirmFrame.Visible = true
+	confirmFrame.BackgroundTransparency = 1
+	TweenService:Create(confirmFrame, TweenInfo.new(0.2, Enum.EasingStyle.Back), {
+		Size = UDim2.new(0, 200, 0, 100),
+		BackgroundTransparency = 0
+	}):Play()
+end
+
+local function hideConfirm()
+	local hideTween = TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
+		Size = UDim2.new(0, 0, 0, 0),
+		BackgroundTransparency = 1
+	})
+	hideTween:Play()
+	hideTween.Completed:Connect(function()
+		confirmFrame.Visible = false
+		blur.Enabled = false
+	end)
+end
+
+-- === Button Behavior ===
+injectButton.MouseButton1Click:Connect(function()
+	showConfirm()
+end)
+
+yesButton.MouseButton1Click:Connect(function()
+	hideConfirm()
+	local success, err = pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+	end)
+	if not success then
+		warn("Failed to load script:", err)
+		injectButton.Text = "Error!"
+	else
+		injectButton.Text = "Injected!"
+	end
+end)
+
+cancelButton.MouseButton1Click:Connect(function()
+	hideConfirm()
+end)
