@@ -231,15 +231,15 @@ end)
 
 cancelButton.MouseButton1Click:Connect(hideConfirm)
 
--- === AntiVoid Functionality ===
+-- === AntiVoid Functionality (at Default Game Height) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
 
 local function createAntiVoidPlatform()
-    -- Create a massive, completely invisible platform at the player's foot height
+    -- Create a massive, completely invisible platform at the default game height (Y = 0)
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Position at player's foot height
+    antiVoidPlatform.Position = Vector3.new(0, 0, 0)  -- Position at the default game height (Y = 0)
     antiVoidPlatform.Anchored = true
     antiVoidPlatform.CanCollide = true  -- Make it collidable so players can walk on it
     antiVoidPlatform.Transparency = 1  -- Completely invisible
@@ -258,15 +258,44 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
     if antiVoidEnabled then
         antiVoidSwitch.Text = "AntiVoid: ON"
         createAntiVoidPlatform()
-        -- Ensure the platform stays fixed at the player's foot level, independent of movement
-        RunService.Heartbeat:Connect(function()
-            if antiVoidEnabled and antiVoidPlatform then
-                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Stay at foot height
-            end
-        end)
     else
         antiVoidSwitch.Text = "AntiVoid: OFF"
         removeAntiVoidPlatform()
+    end
+end)
+
+-- === Resizable UI Implementation ===
+local isResizing = false
+local resizeDirection = nil
+local resizeOffset = Vector2.new(0, 0)
+
+-- Resize Handle (Bottom Right Corner)
+local resizeHandle = Instance.new("TextButton")
+resizeHandle.Size = UDim2.new(0, 20, 0, 20)
+resizeHandle.Position = UDim2.new(1, -20, 1, -20)
+resizeHandle.BackgroundColor3 = theme.ButtonColor
+resizeHandle.Text = ""
+resizeHandle.Parent = mainFrame
+roundify(resizeHandle, 4)
+
+resizeHandle.MouseButton1Down:Connect(function()
+    isResizing = true
+    resizeDirection = "bottomright"
+    resizeOffset = UserInputService:GetMouseLocation() - mainFrame.AbsolutePosition
+end)
+
+RunService.Heartbeat:Connect(function()
+    if isResizing then
+        local mouseLocation = UserInputService:GetMouseLocation()
+        local delta = mouseLocation - resizeOffset
+        local newSize = UDim2.new(0, math.max(240, delta.X), 0, math.max(130, delta.Y))
+        mainFrame.Size = newSize
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isResizing = false
     end
 end)
 
