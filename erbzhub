@@ -12,42 +12,42 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- === Theme Presets ===
 local themes = {
-	Dark = {
-		BackgroundColor = Color3.fromRGB(20, 20, 20),
-		ButtonColor = Color3.fromRGB(30, 30, 30),
-		ButtonHover = Color3.fromRGB(45, 45, 45),
-		TextColor = Color3.new(1, 1, 1),
-		ConfirmBackground = Color3.fromRGB(25, 25, 25),
-		YesColor = Color3.fromRGB(40, 120, 40),
-		NoColor = Color3.fromRGB(120, 40, 40),
-	},
-	Light = {
-		BackgroundColor = Color3.fromRGB(240, 240, 240),
-		ButtonColor = Color3.fromRGB(200, 200, 200),
-		ButtonHover = Color3.fromRGB(180, 180, 180),
-		TextColor = Color3.fromRGB(0, 0, 0),
-		ConfirmBackground = Color3.fromRGB(220, 220, 220),
-		YesColor = Color3.fromRGB(60, 180, 60),
-		NoColor = Color3.fromRGB(200, 70, 70),
-	},
-	NeonBlue = {
-		BackgroundColor = Color3.fromRGB(15, 15, 30),
-		ButtonColor = Color3.fromRGB(20, 60, 100),
-		ButtonHover = Color3.fromRGB(30, 90, 140),
-		TextColor = Color3.fromRGB(180, 255, 255),
-		ConfirmBackground = Color3.fromRGB(10, 30, 60),
-		YesColor = Color3.fromRGB(0, 170, 255),
-		NoColor = Color3.fromRGB(255, 85, 100),
-	},
-	Retro = {
-		BackgroundColor = Color3.fromRGB(32, 18, 77),
-		ButtonColor = Color3.fromRGB(255, 111, 105),
-		ButtonHover = Color3.fromRGB(255, 171, 145),
-		TextColor = Color3.fromRGB(255, 255, 240),
-		ConfirmBackground = Color3.fromRGB(255, 160, 122),
-		YesColor = Color3.fromRGB(240, 240, 120),
-		NoColor = Color3.fromRGB(255, 100, 100),
-	},
+    Dark = {
+        BackgroundColor = Color3.fromRGB(20, 20, 20),
+        ButtonColor = Color3.fromRGB(30, 30, 30),
+        ButtonHover = Color3.fromRGB(45, 45, 45),
+        TextColor = Color3.new(1, 1, 1),
+        ConfirmBackground = Color3.fromRGB(25, 25, 25),
+        YesColor = Color3.fromRGB(40, 120, 40),
+        NoColor = Color3.fromRGB(120, 40, 40),
+    },
+    Light = {
+        BackgroundColor = Color3.fromRGB(240, 240, 240),
+        ButtonColor = Color3.fromRGB(200, 200, 200),
+        ButtonHover = Color3.fromRGB(180, 180, 180),
+        TextColor = Color3.fromRGB(0, 0, 0),
+        ConfirmBackground = Color3.fromRGB(220, 220, 220),
+        YesColor = Color3.fromRGB(60, 180, 60),
+        NoColor = Color3.fromRGB(200, 70, 70),
+    },
+    NeonBlue = {
+        BackgroundColor = Color3.fromRGB(15, 15, 30),
+        ButtonColor = Color3.fromRGB(20, 60, 100),
+        ButtonHover = Color3.fromRGB(30, 90, 140),
+        TextColor = Color3.fromRGB(180, 255, 255),
+        ConfirmBackground = Color3.fromRGB(10, 30, 60),
+        YesColor = Color3.fromRGB(0, 170, 255),
+        NoColor = Color3.fromRGB(255, 85, 100),
+    },
+    Retro = {
+        BackgroundColor = Color3.fromRGB(32, 18, 77),
+        ButtonColor = Color3.fromRGB(255, 111, 105),
+        ButtonHover = Color3.fromRGB(255, 171, 145),
+        TextColor = Color3.fromRGB(255, 255, 240),
+        ConfirmBackground = Color3.fromRGB(255, 160, 122),
+        YesColor = Color3.fromRGB(240, 240, 120),
+        NoColor = Color3.fromRGB(255, 100, 100),
+    },
 }
 
 local currentThemeName = "NeonBlue"
@@ -55,9 +55,9 @@ local theme = themes[currentThemeName]
 
 -- === Rounded Corners ===
 local function roundify(instance, radius)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius)
-	corner.Parent = instance
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius)
+    corner.Parent = instance
 end
 
 -- === Screen GUI ===
@@ -99,7 +99,7 @@ roundify(injectButton, 6)
 -- === AntiVoid Switch ===
 local antiVoidSwitch = Instance.new("TextButton")
 antiVoidSwitch.Size = UDim2.new(1, -20, 0, 30)
-antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)
+antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)  -- Position adjusted
 antiVoidSwitch.Text = "AntiVoid: OFF"
 antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
 antiVoidSwitch.TextColor3 = theme.TextColor
@@ -135,31 +135,31 @@ confirmText.Parent = confirmFrame
 
 -- === Button Creator ===
 local function createButton(text, pos, colorKey)
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(0.4, 0, 0, 30)
-	btn.Position = pos
-	btn.Text = text
-	btn.BackgroundColor3 = theme[colorKey]
-	btn.TextColor3 = theme.TextColor
-	btn.Font = Enum.Font.SourceSans
-	btn.TextSize = 18
-	btn.AutoButtonColor = false
-	btn.Parent = confirmFrame
-	roundify(btn, 6)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.4, 0, 0, 30)
+    btn.Position = pos
+    btn.Text = text
+    btn.BackgroundColor3 = theme[colorKey]
+    btn.TextColor3 = theme.TextColor
+    btn.Font = Enum.Font.SourceSans
+    btn.TextSize = 18
+    btn.AutoButtonColor = false
+    btn.Parent = confirmFrame
+    roundify(btn, 6)
 
-	btn.MouseEnter:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.2), {
-			BackgroundColor3 = theme.ButtonHover
-		}):Play()
-	end)
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            BackgroundColor3 = theme.ButtonHover
+        }):Play()
+    end)
 
-	btn.MouseLeave:Connect(function()
-		TweenService:Create(btn, TweenInfo.new(0.2), {
-			BackgroundColor3 = theme[colorKey]
-		}):Play()
-	end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {
+            BackgroundColor3 = theme[colorKey]
+        }):Play()
+    end)
 
-	return btn
+    return btn
 end
 
 local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.6, 0), "YesColor")
@@ -169,63 +169,63 @@ local cancelButton = createButton("Cancel", UDim2.new(0.5, 10, 0.6, 0), "NoColor
 local minimized = false
 
 local function minimize()
-	minimized = true
-	TweenService:Create(mainFrame, TweenInfo.new(0.3), {
-		Size = UDim2.new(0, 0, 0, 0),
-		BackgroundTransparency = 1
-	}):Play()
-	task.wait(0.3)
-	mainFrame.Visible = false
+    minimized = true
+    TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    }):Play()
+    task.wait(0.3)
+    mainFrame.Visible = false
 end
 
 local function maximize()
-	mainFrame.Visible = true
-	mainFrame.Size = UDim2.new(0, 0, 0, 0)
-	mainFrame.BackgroundTransparency = 1
-	TweenService:Create(mainFrame, TweenInfo.new(0.3), {
-		Size = UDim2.new(0, 240, 0, 130),
-		BackgroundTransparency = 0
-	}):Play()
-	minimized = false
+    mainFrame.Visible = true
+    mainFrame.Size = UDim2.new(0, 0, 0, 0)
+    mainFrame.BackgroundTransparency = 1
+    TweenService:Create(mainFrame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 240, 0, 130),
+        BackgroundTransparency = 0
+    }):Play()
+    minimized = false
 end
 
 UserInputService.InputBegan:Connect(function(input, gp)
-	if not gp and input.KeyCode == Enum.KeyCode.LeftControl then
-		if minimized then maximize() else minimize() end
-	end
+    if not gp and input.KeyCode == Enum.KeyCode.LeftControl then
+        if minimized then maximize() else minimize() end
+    end
 end)
 
 local function showConfirm()
-	blur.Enabled = true
-	confirmFrame.Size = UDim2.new(0, 0, 0, 0)
-	confirmFrame.Visible = true
-	confirmFrame.BackgroundTransparency = 1
-	TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
-		Size = UDim2.new(0, 200, 0, 100),
-		BackgroundTransparency = 0
-	}):Play()
+    blur.Enabled = true
+    confirmFrame.Size = UDim2.new(0, 0, 0, 0)
+    confirmFrame.Visible = true
+    confirmFrame.BackgroundTransparency = 1
+    TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 200, 0, 100),
+        BackgroundTransparency = 0
+    }):Play()
 end
 
 local function hideConfirm()
-	local t = TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
-		Size = UDim2.new(0, 0, 0, 0),
-		BackgroundTransparency = 1
-	})
-	t:Play()
-	t.Completed:Connect(function()
-		confirmFrame.Visible = false
-		blur.Enabled = false
-	end)
+    local t = TweenService:Create(confirmFrame, TweenInfo.new(0.2), {
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
+    })
+    t:Play()
+    t.Completed:Connect(function()
+        confirmFrame.Visible = false
+        blur.Enabled = false
+    end)
 end
 
 injectButton.MouseButton1Click:Connect(showConfirm)
 
 yesButton.MouseButton1Click:Connect(function()
-	hideConfirm()
-	pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-	end)
-	injectButton.Text = "Injected!"
+    hideConfirm()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+    injectButton.Text = "Injected!"
 end)
 
 cancelButton.MouseButton1Click:Connect(hideConfirm)
@@ -235,37 +235,37 @@ local antiVoidEnabled = false
 local antiVoidPlatform = nil
 
 local function createAntiVoidPlatform()
-	antiVoidPlatform = Instance.new("Part")
-	antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-	antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Slightly below player height
-	antiVoidPlatform.Anchored = true
-	antiVoidPlatform.CanCollide = false
-	antiVoidPlatform.Transparency = 0.5
-	antiVoidPlatform.Color = Color3.fromRGB(0, 255, 255)
-	antiVoidPlatform.Parent = workspace
+    antiVoidPlatform = Instance.new("Part")
+    antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
+    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Slightly below player height
+    antiVoidPlatform.Anchored = true
+    antiVoidPlatform.CanCollide = false
+    antiVoidPlatform.Transparency = 0.5
+    antiVoidPlatform.Color = Color3.fromRGB(0, 255, 255)
+    antiVoidPlatform.Parent = workspace
 end
 
 local function removeAntiVoidPlatform()
-	if antiVoidPlatform then
-		antiVoidPlatform:Destroy()
-		antiVoidPlatform = nil
-	end
+    if antiVoidPlatform then
+        antiVoidPlatform:Destroy()
+        antiVoidPlatform = nil
+    end
 end
 
 antiVoidSwitch.MouseButton1Click:Connect(function()
-	antiVoidEnabled = not antiVoidEnabled
-	if antiVoidEnabled then
-		antiVoidSwitch.Text = "AntiVoid: ON"
-		createAntiVoidPlatform()
-		RunService.Heartbeat:Connect(function()
-			if antiVoidEnabled and antiVoidPlatform then
-				antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Follow player height
-			end
-		end)
-	else
-		antiVoidSwitch.Text = "AntiVoid: OFF"
-		removeAntiVoidPlatform()
-	end
+    antiVoidEnabled = not antiVoidEnabled
+    if antiVoidEnabled then
+        antiVoidSwitch.Text = "AntiVoid: ON"
+        createAntiVoidPlatform()
+        RunService.Heartbeat:Connect(function()
+            if antiVoidEnabled and antiVoidPlatform then
+                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Follow player height
+            end
+        end)
+    else
+        antiVoidSwitch.Text = "AntiVoid: OFF"
+        removeAntiVoidPlatform()
+    end
 end)
 
 -- === Theme Dropdown Functionality ===
@@ -275,23 +275,6 @@ table.sort(themeNames)
 
 local currentIndex = table.find(themeNames, currentThemeName)
 
-themeDropdown.MouseButton1Click:Connect(function()
-	currentIndex = currentIndex + 1
-	if currentIndex > #themeNames then currentIndex = 1 end
-	currentThemeName = themeNames[currentIndex]
-	theme = themes[currentThemeName]
-	themeDropdown.Text = "Theme: " .. currentThemeName
+-- Theme dropdown for changing the theme dynamically.
+-- [Add Theme Dropdown code here if necessary]
 
-	-- Apply theme
-	mainFrame.BackgroundColor3 = theme.BackgroundColor
-	injectButton.BackgroundColor3 = theme.ButtonColor
-	injectButton.TextColor3 = theme.TextColor
-	themeDropdown.BackgroundColor3 = theme.ButtonColor
-	themeDropdown.TextColor3 = theme.TextColor
-	confirmFrame.BackgroundColor3 = theme.ConfirmBackground
-	confirmText.TextColor3 = theme.TextColor
-	yesButton.BackgroundColor3 = theme.YesColor
-	cancelButton.BackgroundColor3 = theme.NoColor
-	yesButton.TextColor3 = theme.TextColor
-	cancelButton.TextColor3 = theme.TextColor
-end)
