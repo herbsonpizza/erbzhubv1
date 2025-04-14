@@ -4,8 +4,11 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- === Theme Presets ===
 local themes = {
@@ -93,18 +96,18 @@ injectButton.AutoButtonColor = false
 injectButton.Parent = mainFrame
 roundify(injectButton, 6)
 
--- === Theme Dropdown ===
-local themeDropdown = Instance.new("TextButton")
-themeDropdown.Size = UDim2.new(1, -20, 0, 30)
-themeDropdown.Position = UDim2.new(0, 10, 0, 70)
-themeDropdown.Text = "Theme: " .. currentThemeName
-themeDropdown.BackgroundColor3 = theme.ButtonColor
-themeDropdown.TextColor3 = theme.TextColor
-themeDropdown.Font = Enum.Font.SourceSans
-themeDropdown.TextSize = 18
-themeDropdown.AutoButtonColor = false
-themeDropdown.Parent = mainFrame
-roundify(themeDropdown, 6)
+-- === AntiVoid Switch ===
+local antiVoidSwitch = Instance.new("TextButton")
+antiVoidSwitch.Size = UDim2.new(1, -20, 0, 30)
+antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)
+antiVoidSwitch.Text = "AntiVoid: OFF"
+antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
+antiVoidSwitch.TextColor3 = theme.TextColor
+antiVoidSwitch.Font = Enum.Font.SourceSans
+antiVoidSwitch.TextSize = 18
+antiVoidSwitch.AutoButtonColor = false
+antiVoidSwitch.Parent = mainFrame
+roundify(antiVoidSwitch, 6)
 
 -- === Confirmation Frame ===
 local confirmFrame = Instance.new("Frame")
@@ -226,6 +229,44 @@ yesButton.MouseButton1Click:Connect(function()
 end)
 
 cancelButton.MouseButton1Click:Connect(hideConfirm)
+
+-- === AntiVoid Functionality ===
+local antiVoidEnabled = false
+local antiVoidPlatform = nil
+
+local function createAntiVoidPlatform()
+	antiVoidPlatform = Instance.new("Part")
+	antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
+	antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Slightly below player height
+	antiVoidPlatform.Anchored = true
+	antiVoidPlatform.CanCollide = false
+	antiVoidPlatform.Transparency = 0.5
+	antiVoidPlatform.Color = Color3.fromRGB(0, 255, 255)
+	antiVoidPlatform.Parent = workspace
+end
+
+local function removeAntiVoidPlatform()
+	if antiVoidPlatform then
+		antiVoidPlatform:Destroy()
+		antiVoidPlatform = nil
+	end
+end
+
+antiVoidSwitch.MouseButton1Click:Connect(function()
+	antiVoidEnabled = not antiVoidEnabled
+	if antiVoidEnabled then
+		antiVoidSwitch.Text = "AntiVoid: ON"
+		createAntiVoidPlatform()
+		RunService.Heartbeat:Connect(function()
+			if antiVoidEnabled and antiVoidPlatform then
+				antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Follow player height
+			end
+		end)
+	else
+		antiVoidSwitch.Text = "AntiVoid: OFF"
+		removeAntiVoidPlatform()
+	end
+end)
 
 -- === Theme Dropdown Functionality ===
 local themeNames = {}
