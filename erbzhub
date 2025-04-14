@@ -9,6 +9,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
 -- === Theme Presets ===
 local themes = {
@@ -99,7 +100,7 @@ roundify(injectButton, 6)
 -- === AntiVoid Switch ===
 local antiVoidSwitch = Instance.new("TextButton")
 antiVoidSwitch.Size = UDim2.new(1, -20, 0, 30)
-antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)  -- Position adjusted
+antiVoidSwitch.Position = UDim2.new(0, 10, 0, 70)
 antiVoidSwitch.Text = "AntiVoid: OFF"
 antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
 antiVoidSwitch.TextColor3 = theme.TextColor
@@ -235,13 +236,13 @@ local antiVoidEnabled = false
 local antiVoidPlatform = nil
 
 local function createAntiVoidPlatform()
+    -- Create a massive, completely invisible platform at the player's foot height
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Slightly below player height
+    antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- At player's foot height
     antiVoidPlatform.Anchored = true
     antiVoidPlatform.CanCollide = false
-    antiVoidPlatform.Transparency = 0.5
-    antiVoidPlatform.Color = Color3.fromRGB(0, 255, 255)
+    antiVoidPlatform.Transparency = 1  -- Completely invisible
     antiVoidPlatform.Parent = workspace
 end
 
@@ -259,7 +260,7 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
         createAntiVoidPlatform()
         RunService.Heartbeat:Connect(function()
             if antiVoidEnabled and antiVoidPlatform then
-                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, 2, 0)  -- Follow player height
+                antiVoidPlatform.Position = humanoidRootPart.Position - Vector3.new(0, humanoidRootPart.Size.Y / 2, 0)  -- Follow player height
             end
         end)
     else
@@ -267,14 +268,4 @@ antiVoidSwitch.MouseButton1Click:Connect(function()
         removeAntiVoidPlatform()
     end
 end)
-
--- === Theme Dropdown Functionality ===
-local themeNames = {}
-for name in pairs(themes) do table.insert(themeNames, name) end
-table.sort(themeNames)
-
-local currentIndex = table.find(themeNames, currentThemeName)
-
--- Theme dropdown for changing the theme dynamically.
--- [Add Theme Dropdown code here if necessary]
 
