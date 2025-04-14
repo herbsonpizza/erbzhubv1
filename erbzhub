@@ -231,16 +231,16 @@ end)
 
 cancelButton.MouseButton1Click:Connect(hideConfirm)
 
--- === AntiVoid Functionality (Fixed Height) ===
+-- === AntiVoid Functionality (Tiny Bit Lower than Y = 0) ===
 local antiVoidEnabled = false
 local antiVoidPlatform = nil
-local platformHeight = 0  -- Fixed height for the AntiVoid platform (Y = 0)
+local platformHeight = -0.1  -- Slightly lower than Y = 0 (tiny offset)
 
 local function createAntiVoidPlatform()
     -- Create a massive, completely invisible platform at the fixed height (Y = platformHeight)
     antiVoidPlatform = Instance.new("Part")
     antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)  -- Massive size
-    antiVoidPlatform.Position = Vector3.new(0, platformHeight, 0)  -- Position at the fixed height
+    antiVoidPlatform.Position = Vector3.new(0, platformHeight, 0)  -- Position just slightly below Y = 0
     antiVoidPlatform.Anchored = true
     antiVoidPlatform.CanCollide = true  -- Make it collidable so players can walk on it
     antiVoidPlatform.Transparency = 1  -- Completely invisible
