@@ -1,176 +1,145 @@
+-- Full Roblox LocalScript UI with Themes, AntiVoid, Confirmation, Blur, and Minimize Toggle
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
 
 local player = Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "InjectorUI"
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+screenGui.Name = "CustomUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- === Theme Presets ===
-local themes = {
-	Dark = {
-		BackgroundColor = Color3.fromRGB(20, 20, 20),
-		ButtonColor = Color3.fromRGB(30, 30, 30),
-		ButtonHover = Color3.fromRGB(45, 45, 45),
-		TextColor = Color3.new(1, 1, 1),
-		ConfirmBackground = Color3.fromRGB(25, 25, 25),
-		YesColor = Color3.fromRGB(40, 120, 40),
-		NoColor = Color3.fromRGB(120, 40, 40),
-	},
-	Light = {
-		BackgroundColor = Color3.fromRGB(240, 240, 240),
-		ButtonColor = Color3.fromRGB(200, 200, 200),
-		ButtonHover = Color3.fromRGB(180, 180, 180),
-		TextColor = Color3.new(0, 0, 0),
-		ConfirmBackground = Color3.fromRGB(220, 220, 220),
-		YesColor = Color3.fromRGB(60, 180, 60),
-		NoColor = Color3.fromRGB(200, 70, 70),
-	},
-	NeonBlue = {
-		BackgroundColor = Color3.fromRGB(15, 15, 30),
-		ButtonColor = Color3.fromRGB(20, 60, 100),
-		ButtonHover = Color3.fromRGB(30, 90, 140),
-		TextColor = Color3.fromRGB(180, 255, 255),
-		ConfirmBackground = Color3.fromRGB(10, 30, 60),
-		YesColor = Color3.fromRGB(0, 170, 255),
-		NoColor = Color3.fromRGB(255, 85, 100),
-	},
-}
-
-local currentThemeName = "NeonBlue"
-local theme = themes[currentThemeName]
-
--- === Rounded Corners Helper ===
-local function roundify(instance, radius)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius)
-	corner.Parent = instance
-end
-
--- === Blur Effect ===
+-- Blur effect
 local blur = Instance.new("BlurEffect")
-blur.Size = 20
+blur.Size = 24
 blur.Enabled = false
 blur.Parent = Lighting
 
--- === Main UI ===
+-- Themes
+local themes = {
+    Default = {
+        BackgroundColor = Color3.fromRGB(30, 30, 30),
+        ButtonColor = Color3.fromRGB(50, 50, 50),
+        TextColor = Color3.fromRGB(255, 255, 255),
+        ConfirmBackground = Color3.fromRGB(40, 40, 40),
+        YesColor = Color3.fromRGB(0, 200, 0),
+        NoColor = Color3.fromRGB(200, 0, 0)
+    },
+    Blue = {
+        BackgroundColor = Color3.fromRGB(20, 20, 50),
+        ButtonColor = Color3.fromRGB(40, 60, 120),
+        TextColor = Color3.fromRGB(255, 255, 255),
+        ConfirmBackground = Color3.fromRGB(30, 30, 60),
+        YesColor = Color3.fromRGB(0, 150, 255),
+        NoColor = Color3.fromRGB(255, 80, 80)
+    },
+}
+
+local currentTheme = "Default"
+local theme = themes[currentTheme]
+
+local function roundify(gui, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, radius)
+    corner.Parent = gui
+end
+
+-- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 400, 0, 220)
 mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 mainFrame.BackgroundColor3 = theme.BackgroundColor
-mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Draggable = true
 mainFrame.Parent = screenGui
-roundify(mainFrame, 10)
+roundify(mainFrame, 12)
 
+-- Title
 local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 30)
-titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.Text = "Injector UI"
-titleLabel.TextColor3 = theme.TextColor
+titleLabel.Size = UDim2.new(1, 0, 0, 40)
+titleLabel.Text = "Script Hub"
 titleLabel.BackgroundTransparency = 1
-titleLabel.Font = Enum.Font.SourceSans
-titleLabel.TextSize = 20
+titleLabel.TextColor3 = theme.TextColor
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 24
 titleLabel.Parent = mainFrame
 
+-- Inject Button
 local injectButton = Instance.new("TextButton")
-injectButton.Size = UDim2.new(1, -20, 0, 50)
-injectButton.Position = UDim2.new(0, 10, 0, 30)
-injectButton.Text = "Inject Infinite Yield"
+injectButton.Size = UDim2.new(0.5, -10, 0, 40)
+injectButton.Position = UDim2.new(0, 5, 0, 50)
+injectButton.Text = "Inject"
 injectButton.BackgroundColor3 = theme.ButtonColor
 injectButton.TextColor3 = theme.TextColor
 injectButton.Font = Enum.Font.SourceSans
-injectButton.TextSize = 22
-injectButton.AutoButtonColor = false
+iinjectButton.TextSize = 20
 injectButton.Parent = mainFrame
 roundify(injectButton, 8)
 
+-- AntiVoid Button
 local antiVoidSwitch = Instance.new("TextButton")
-antiVoidSwitch.Size = UDim2.new(1, -20, 0, 40)
-antiVoidSwitch.Position = UDim2.new(0, 10, 0, 90)
-antiVoidSwitch.Text = "AntiVoid: OFF"
+antiVoidSwitch.Size = UDim2.new(0.5, -10, 0, 40)
+antiVoidSwitch.Position = UDim2.new(0.5, 5, 0, 50)
+antiVoidSwitch.Text = "AntiVoid"
 antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
 antiVoidSwitch.TextColor3 = theme.TextColor
 antiVoidSwitch.Font = Enum.Font.SourceSans
 antiVoidSwitch.TextSize = 20
-antiVoidSwitch.AutoButtonColor = false
 antiVoidSwitch.Parent = mainFrame
 roundify(antiVoidSwitch, 8)
 
--- === Theme Dropdown ===
-local themeDropdown = Instance.new("Frame")
-themeDropdown.Size = UDim2.new(0, 150, 0, 200)
-themeDropdown.Position = UDim2.new(0.5, -75, 0.5, 100)
-themeDropdown.BackgroundColor3 = theme.BackgroundColor
-themeDropdown.BorderSizePixel = 0
-themeDropdown.Visible = false
-themeDropdown.Parent = screenGui
+-- Theme Dropdown
+local themeDropdown = Instance.new("TextButton")
+themeDropdown.Size = UDim2.new(1, -10, 0, 40)
+themeDropdown.Position = UDim2.new(0, 5, 0, 100)
+themeDropdown.Text = "Change Theme"
+themeDropdown.BackgroundColor3 = theme.ButtonColor
+themeDropdown.TextColor3 = theme.TextColor
+themeDropdown.Font = Enum.Font.SourceSans
+themeDropdown.TextSize = 20
+themeDropdown.Parent = mainFrame
 roundify(themeDropdown, 8)
 
-local dropdownTitle = Instance.new("TextLabel")
-dropdownTitle.Size = UDim2.new(1, 0, 0, 30)
-dropdownTitle.Position = UDim2.new(0, 0, 0, 0)
-dropdownTitle.Text = "Select Theme"
-dropdownTitle.TextColor3 = theme.TextColor
-dropdownTitle.BackgroundTransparency = 1
-dropdownTitle.Font = Enum.Font.SourceSans
-dropdownTitle.TextSize = 20
-dropdownTitle.Parent = themeDropdown
+-- Dropdown functionality
+local dropdownList = Instance.new("Frame")
+dropdownList.Size = UDim2.new(1, -10, 0, 0)
+dropdownList.Position = UDim2.new(0, 5, 0, 140)
+dropdownList.BackgroundColor3 = theme.ButtonColor
+dropdownList.ClipsDescendants = true
+dropdownList.Visible = false
+dropdownList.Parent = mainFrame
+roundify(dropdownList, 8)
 
-local function updateTheme()
-	mainFrame.BackgroundColor3 = theme.BackgroundColor
-	injectButton.BackgroundColor3 = theme.ButtonColor
-	antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
-	injectButton.TextColor3 = theme.TextColor
-	antiVoidSwitch.TextColor3 = theme.TextColor
-	titleLabel.TextColor3 = theme.TextColor
+local dropdownLayout = Instance.new("UIListLayout")
+dropdownLayout.Parent = dropdownList
 
-	confirmFrame.BackgroundColor3 = theme.ConfirmBackground
-	confirmLabel.TextColor3 = theme.TextColor
-	yesButton.BackgroundColor3 = theme.YesColor
-	noButton.BackgroundColor3 = theme.NoColor
+for name, _ in pairs(themes) do
+    local option = Instance.new("TextButton")
+    option.Size = UDim2.new(1, 0, 0, 30)
+    option.Text = name
+    option.BackgroundColor3 = theme.ButtonColor
+    option.TextColor3 = theme.TextColor
+    option.Font = Enum.Font.SourceSans
+    option.TextSize = 18
+    option.Parent = dropdownList
+    roundify(option, 4)
 
-	dropdownTitle.TextColor3 = theme.TextColor
+    option.MouseButton1Click:Connect(function()
+        currentTheme = name
+        theme = themes[currentTheme]
+        updateTheme()
+        dropdownList.Visible = false
+    end)
 end
 
--- Theme Buttons
-local i = 0
-for themeName, _ in pairs(themes) do
-	local btn = Instance.new("TextButton")
-	btn.Size = UDim2.new(1, 0, 0, 30)
-	btn.Position = UDim2.new(0, 0, 0, 30 + i * 30)
-	btn.Text = themeName
-	btn.BackgroundColor3 = theme.ButtonColor
-	btn.TextColor3 = theme.TextColor
-	btn.Font = Enum.Font.SourceSans
-	btn.TextSize = 18
-	btn.Parent = themeDropdown
-	roundify(btn, 4)
-	btn.MouseButton1Click:Connect(function()
-		currentThemeName = themeName
-		theme = themes[themeName]
-		updateTheme()
-		themeDropdown.Visible = false
-	end)
-	i += 1
-end
-
--- Toggle Dropdown with T
-UserInputService.InputBegan:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.T then
-		themeDropdown.Visible = not themeDropdown.Visible
-	end
-end)
-
--- === Confirmation Dialog ===
+-- Confirmation Dialog
 local confirmFrame = Instance.new("Frame")
 confirmFrame.Size = UDim2.new(0, 300, 0, 150)
 confirmFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
 confirmFrame.BackgroundColor3 = theme.ConfirmBackground
+confirmFrame.BorderSizePixel = 0
 confirmFrame.Visible = false
 confirmFrame.Active = true
 confirmFrame.Draggable = true
@@ -179,12 +148,11 @@ roundify(confirmFrame, 10)
 
 local confirmLabel = Instance.new("TextLabel")
 confirmLabel.Size = UDim2.new(1, 0, 0, 50)
-confirmLabel.Position = UDim2.new(0, 0, 0, 0)
 confirmLabel.Text = "Are you sure you want to inject?"
 confirmLabel.TextColor3 = theme.TextColor
-confirmLabel.BackgroundTransparency = 1
 confirmLabel.Font = Enum.Font.SourceSans
 confirmLabel.TextSize = 20
+confirmLabel.BackgroundTransparency = 1
 confirmLabel.Parent = confirmFrame
 
 local yesButton = Instance.new("TextButton")
@@ -209,66 +177,108 @@ noButton.TextSize = 20
 noButton.Parent = confirmFrame
 roundify(noButton, 8)
 
--- Confirmation Logic
+-- Update Theme Function
+function updateTheme()
+    mainFrame.BackgroundColor3 = theme.BackgroundColor
+    injectButton.BackgroundColor3 = theme.ButtonColor
+    antiVoidSwitch.BackgroundColor3 = theme.ButtonColor
+    injectButton.TextColor3 = theme.TextColor
+    antiVoidSwitch.TextColor3 = theme.TextColor
+    titleLabel.TextColor3 = theme.TextColor
+    themeDropdown.BackgroundColor3 = theme.ButtonColor
+    themeDropdown.TextColor3 = theme.TextColor
+    dropdownList.BackgroundColor3 = theme.ButtonColor
+    confirmFrame.BackgroundColor3 = theme.ConfirmBackground
+    confirmLabel.TextColor3 = theme.TextColor
+    yesButton.BackgroundColor3 = theme.YesColor
+    noButton.BackgroundColor3 = theme.NoColor
+end
+
+-- Inject logic with confirmation
 injectButton.MouseButton1Click:Connect(function()
-	confirmFrame.Visible = true
-	blur.Enabled = true
+    confirmFrame.Visible = true
+    blur.Enabled = true
 end)
 
 yesButton.MouseButton1Click:Connect(function()
-	confirmFrame.Visible = false
-	blur.Enabled = false
-	pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-	end)
-	injectButton.Text = "Injected!"
+    confirmFrame.Visible = false
+    blur.Enabled = false
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+    injectButton.Text = "Injected!"
 end)
 
 noButton.MouseButton1Click:Connect(function()
-	confirmFrame.Visible = false
-	blur.Enabled = false
+    confirmFrame.Visible = false
+    blur.Enabled = false
 end)
 
--- === AntiVoid Logic ===
+-- AntiVoid toggle
 local antiVoidEnabled = false
-local antiVoidPlatform = nil
-local function createAntiVoidPlatform()
-	antiVoidPlatform = Instance.new("Part")
-	antiVoidPlatform.Size = Vector3.new(1000, 1, 1000)
-	antiVoidPlatform.Position = Vector3.new(0, -0.5, 0)
-	antiVoidPlatform.Anchored = true
-	antiVoidPlatform.CanCollide = true
-	antiVoidPlatform.Transparency = 1
-	antiVoidPlatform.Name = "AntiVoidPlatform"
-	antiVoidPlatform.Parent = workspace
-end
-
-local function removeAntiVoidPlatform()
-	if antiVoidPlatform then
-		antiVoidPlatform:Destroy()
-		antiVoidPlatform = nil
-	end
-end
+local platform = Instance.new("Part")
+platform.Anchored = true
+platform.Size = Vector3.new(1000, 1, 1000)
+platform.Position = Vector3.new(0, -0.5, 0)
+platform.Transparency = 1
+platform.CanCollide = true
+platform.Name = "AntiVoidPlatform"
 
 antiVoidSwitch.MouseButton1Click:Connect(function()
-	antiVoidEnabled = not antiVoidEnabled
-	if antiVoidEnabled then
-		antiVoidSwitch.Text = "AntiVoid: ON"
-		createAntiVoidPlatform()
-	else
-		antiVoidSwitch.Text = "AntiVoid: OFF"
-		removeAntiVoidPlatform()
-	end
+    antiVoidEnabled = not antiVoidEnabled
+    if antiVoidEnabled then
+        platform.Parent = workspace
+        antiVoidSwitch.Text = "AntiVoid: ON"
+    else
+        platform.Parent = nil
+        antiVoidSwitch.Text = "AntiVoid"
+    end
 end)
 
--- === Minimize/Maximize UI Toggle ===
+-- Dropdown toggle
+themeDropdown.MouseButton1Click:Connect(function()
+    dropdownList.Visible = not dropdownList.Visible
+end)
+
+-- Minimize / Maximize logic
 local minimized = false
-UserInputService.InputBegan:Connect(function(input, gpe)
-	if gpe then return end
-	if input.KeyCode == Enum.KeyCode.LeftControl then
-		minimized = not minimized
-		local targetSize = minimized and UDim2.new(0, 50, 0, 50) or UDim2.new(0, 400, 0, 220)
-		TweenService:Create(mainFrame, TweenInfo.new(0.25), {Size = targetSize}):Play()
-	end
+local minimizedSize = UDim2.new(0, 50, 0, 30)
+local normalSize = UDim2.new(0, 400, 0, 220)
+
+local elementsToToggle = {
+    injectButton,
+    antiVoidSwitch,
+    titleLabel,
+    themeDropdown,
+    dropdownList
+}
+
+local function minimizeUI()
+    minimized = true
+    for _, element in ipairs(elementsToToggle) do
+        element.Visible = false
+    end
+    TweenService:Create(mainFrame, TweenInfo.new(0.25), {Size = minimizedSize}):Play()
+end
+
+local function maximizeUI()
+    minimized = false
+    for _, element in ipairs(elementsToToggle) do
+        element.Visible = true
+    end
+    TweenService:Create(mainFrame, TweenInfo.new(0.25), {Size = normalSize}):Play()
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.LeftControl then
+        if minimized then
+            maximizeUI()
+        else
+            minimizeUI()
+        end
+    end
 end)
 
+-- Initial Theme Setup
+updateTheme()
